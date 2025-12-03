@@ -1,5 +1,5 @@
-Quillium — PDF → Quizzes & Study Cards
-=====================================
+Quillium - Transform Documents Into Knowledge
+=============================================
 
 Overview
 --------
