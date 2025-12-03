@@ -31,14 +31,14 @@ export const HolographicButton = ({
 
   const variants = {
     primary: cn(
-      'border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 to-purple-500/10',
-      'text-white hover:border-cyan-500 hover:shadow-[0_0_30px_rgba(0,255,255,0.5)]',
-      'before:absolute before:inset-0 before:bg-gradient-to-r before:from-cyan-500/0 before:via-cyan-500/20 before:to-cyan-500/0',
+      'border-green-500/30 bg-gradient-to-br from-green-500/10 to-emerald-500/10',
+      'text-white hover:border-green-500 hover:shadow-[0_0_30px_rgba(34,197,94,0.5)]',
+      'before:absolute before:inset-0 before:bg-gradient-to-r before:from-green-500/0 before:via-green-500/20 before:to-green-500/0',
       'before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-1000'
     ),
     secondary: cn(
-      'border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-pink-500/10',
-      'text-white hover:border-purple-500 hover:shadow-[0_0_30px_rgba(147,51,234,0.5)]'
+      'border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 to-teal-500/10',
+      'text-white hover:border-emerald-500 hover:shadow-[0_0_30px_rgba(16,185,129,0.5)]'
     ),
     ghost: cn(
       'border-white/10 bg-white/5 text-white/80 hover:bg-white/10'
@@ -68,7 +68,7 @@ export const HolographicButton = ({
       </span>
 
       {/* Glow effect */}
-      <div className="absolute -inset-1 bg-linear-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
+      <div className="absolute -inset-1 bg-linear-to-r from-green-500/20 via-emerald-500/20 to-teal-500/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
     </motion.button>
   )
 }

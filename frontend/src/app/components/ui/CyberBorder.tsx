@@ -24,13 +24,13 @@ export const CyberBorder = ({
     <div className={cn('relative', className)}>
       {/* Outer glow */}
       <div className={cn(
-        'absolute -inset-1 bg-linear-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-xl blur',
+        'absolute -inset-1 bg-linear-to-r from-green-500 via-emerald-500 to-teal-500 rounded-xl blur',
         intensityMap[intensity],
         'animate-pulse'
       )} />
       
       {/* Inner border */}
-      <div className="relative rounded-xl bg-black/80 backdrop-blur-sm border border-cyan-500/30">
+      <div className="relative rounded-xl bg-black/80 backdrop-blur-sm border border-green-500/30">
         {children}
       </div>
     </div>

@@ -86,7 +86,7 @@ export const MatrixRain = ({
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none -z-10 opacity-30"
+      className="fixed inset-0 pointer-events-none -z-10 opacity-20"
       style={{ mixBlendMode: 'screen' }}
     />
   )

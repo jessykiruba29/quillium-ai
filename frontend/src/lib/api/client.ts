@@ -50,25 +50,36 @@ apiClient.interceptors.response.use(
   }
 )
 
-export const uploadPDF = async (
-  file: File, 
-  language: string = 'English', 
-  questionCount: number = 20
-) => {
+// @/lib/api/client.ts
+export const uploadPDF = async (file: File, language: string = 'English', questionCount: number = 20) => {
   const formData = new FormData()
   formData.append('file', file)
-  formData.append('language', language)
+  formData.append('language', language)  // CRITICAL: Add language
   formData.append('question_count', questionCount.toString())
-
+  
+  console.log('Sending to API:', {
+    filename: file.name,
+    language: language,
+    questionCount: questionCount
+  })
+  
   try {
-    const response = await apiClient.post('/process-pdf', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+    const url = `${API_BASE_URL.replace(/\/$/, '')}/process-pdf`
+    const response = await fetch(url, {
+      method: 'POST',
+      body: formData,
     })
-    return response.data
+    
+    if (!response.ok) {
+      const errorText = await response.text()
+      throw new Error(`Upload failed: ${response.status} - ${errorText}`)
+    }
+    
+    const data = await response.json()
+    console.log('API response:', data)
+    return data
   } catch (error) {
-    console.error('Upload failed:', error)
+    console.error('API Error:', error)
     throw error
   }
 }

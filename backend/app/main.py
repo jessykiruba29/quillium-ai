@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
@@ -96,8 +96,8 @@ async def get_languages():
 @app.post("/process-pdf", response_model=ProcessResponse)
 async def process_pdf(
     file: UploadFile = File(...),
-    language: str = "English",
-    question_count: int = 20
+    language: str = Form("English"),
+    question_count: int = Form(20)
 ):
     """
     Process a PDF file and generate MCQs and flashcards.
@@ -111,6 +111,11 @@ async def process_pdf(
         ProcessResponse with extracted text, page count, MCQs and flashcards
     """
     try:
+        print(f"📥 [ENDPOINT] Received request:")
+        print(f"   File: {file.filename}")
+        print(f"   Language: {language}")
+        print(f"   Question count: {question_count}")
+        
         # Validate inputs
         if question_count < 5 or question_count > 20:
             raise HTTPException(
@@ -151,13 +156,31 @@ async def process_pdf(
             )
         
         print(f"📄 Generating {question_count} MCQs from {page_count} pages ({len(text)} chars)...")
+        print(f"🌐 Processing in language: {language}")
         
         # Generate MCQs directly in the target language
         mcqs = make_mcqs(text, language=language, max_questions=question_count)
         
-        # Generate flashcards in the target language
-        print(f"📚 Generating {len(mcqs)} flashcards...")
-        flashcards = make_flashcards(text, lang=language, max_cards=question_count)
+        print(f"📝 Generated {len(mcqs)} MCQs")
+        if mcqs:
+            print(f"   First question (preview): {mcqs[0]['question'][:80]}...")
+        
+        # Build flashcards from the generated MCQs so they match exactly
+        print(f"📚 Building {len(mcqs)} flashcards from generated MCQs in {language}...")
+        flashcards = []
+        for idx, m in enumerate(mcqs):
+            try:
+                flashcards.append({
+                    "question": m.get("question", ""),
+                    "answer": m.get("answer", "")
+                })
+            except Exception as e:
+                print(f"⚠️ Error creating flashcard for MCQ {idx}: {e}")
+                # Fallback to a simple flashcard
+                flashcards.append({
+                    "question": m.get("question", ""),
+                    "answer": m.get("answer", "")
+                })
         
         # Validate we got some results
         if not mcqs:

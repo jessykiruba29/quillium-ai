@@ -75,7 +75,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-linear-to-b from-cyan-500 to-purple-500 rounded-full;
+  @apply bg-linear-to-b from-emerald-500 to-green-500 rounded-full;
 }
 
 .holographic-card {

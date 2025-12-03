@@ -13,7 +13,7 @@ export const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-linear-to-br from-cyan-500 to-purple-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-linear-to-br from-green-500 to-emerald-500 flex items-center justify-center">
                 <Code className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -38,7 +38,7 @@ export const Footer = () => {
                 <a
                   key={item}
                   href="#"
-                  className="block text-white/60 hover:text-cyan-400 transition-colors text-sm"
+                  className="block text-white/60 hover:text-green-400 transition-colors text-sm"
                 >
                   {item}
                 </a>
@@ -68,7 +68,7 @@ export const Footer = () => {
             <span>© {currentYear} Quillium. All rights reserved.</span>
             <span className="hidden md:inline">•</span>
             <span className="flex items-center gap-1">
-              Made with <Heart className="w-4 h-4 text-pink-500" /> by Cyber Team
+              Made with <Heart className="w-4 h-4 text-pink-500" /> by Quillium Team
             </span>
           </div>
           

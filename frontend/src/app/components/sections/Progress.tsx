@@ -67,7 +67,7 @@ export const ProgressDashboard = ({ progress, onBack,language='English' }: Progr
       title: 'First Quiz', 
       icon: Zap, 
       unlocked: progress.quizzesTaken > 0,
-      description: 'Complete your first quantum quiz'
+      description: 'Complete your first quiz'
     },
     { 
       title: 'Perfect Score', 
@@ -97,13 +97,13 @@ export const ProgressDashboard = ({ progress, onBack,language='English' }: Progr
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
             <div>
               <h2 className="text-3xl font-bold mb-2">
-                <GradientText text="QUANTUM PROGRESS" gradient="cyber" />
+                <GradientText text="YOUR PROGRESS" gradient="cyber" />
               </h2>
-              <p className="text-cyan-400/70">Track your learning journey through the quantum realm</p>
+              <p className="text-green-400/70">Track your learning journey</p>
             </div>
             <div className="mb-4">
-      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-linear-to-r from-cyan-500/20 to-purple-500/20 border border-cyan-500/30">
-        <span className="text-cyan-400">🌐</span>
+      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-linear-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30">
+        <span className="text-green-400">🌐</span>
         <span className="text-white font-medium">Language: {language}</span>
       </div>
     </div>
@@ -154,8 +154,8 @@ export const ProgressDashboard = ({ progress, onBack,language='English' }: Progr
             <div className="lg:col-span-2">
               <div className="holographic-card p-6 rounded-2xl h-full">
                 <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                  <BarChart3 className="w-6 h-6 text-cyan-400" />
-                  Quantum Accuracy Analysis
+                  <BarChart3 className="w-6 h-6 text-green-400" />
+                  Accuracy Analysis
                 </h3>
                 
                 {/* Gauge Chart */}
@@ -228,7 +228,7 @@ export const ProgressDashboard = ({ progress, onBack,language='English' }: Progr
               <div className="holographic-card p-6 rounded-2xl h-full">
                 <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
                   <Award className="w-6 h-6 text-yellow-400" />
-                  Quantum Achievements
+                  Achievements
                 </h3>
                 
                 <div className="space-y-4">
@@ -343,11 +343,11 @@ export const ProgressDashboard = ({ progress, onBack,language='English' }: Progr
                 ))}
                 
                 {/* Study Tips */}
-                <div className="mt-6 p-4 rounded-xl bg-linear-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/30">
-                  <h4 className="font-bold text-white mb-2">Quantum Tip</h4>
+                <div className="mt-6 p-4 rounded-xl bg-linear-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30">
+                  <h4 className="font-bold text-white mb-2">Learning Tip</h4>
                   <p className="text-white/70 text-sm">
                     {accuracy < 60 
-                      ? 'Focus on reviewing flashcards and retaking quizzes to improve accuracy.'
+                      ? 'Focus on reviewing study cards and retaking quizzes to improve accuracy.'
                       : accuracy < 80
                       ? 'Great progress! Try more challenging quizzes to reach expert level.'
                       : 'Excellent! Share your knowledge with others or explore advanced topics.'
@@ -358,32 +358,7 @@ export const ProgressDashboard = ({ progress, onBack,language='English' }: Progr
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-white/10">
-            <HolographicButton
-              onClick={() => window.location.reload()}
-              variant="secondary"
-              className="flex-1"
-            >
-              <RefreshCw className="w-5 h-5" />
-              <span>Reset Progress</span>
-            </HolographicButton>
-            
-            <HolographicButton
-              onClick={() => alert('Export feature coming soon!')}
-              className="flex-1"
-            >
-              <span>Export Data</span>
-            </HolographicButton>
-            
-            <HolographicButton
-              onClick={() => alert('Share feature coming soon!')}
-              variant="ghost"
-              className="flex-1"
-            >
-              <span>Share Progress</span>
-            </HolographicButton>
-          </div>
+          
         </div>
       </CyberBorder>
     </div>

@@ -17,7 +17,7 @@ export const GradientText = ({
   animate = true 
 }: GradientTextProps) => {
   const gradients = {
-    cyber: 'bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500',
+    cyber: 'bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500',
     neon: 'bg-gradient-to-r from-green-400 via-cyan-400 to-blue-400',
     matrix: 'bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400',
     sunset: 'bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500'

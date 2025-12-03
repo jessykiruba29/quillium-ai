@@ -31,7 +31,7 @@ export const ScanLines = () => {
       {lines.map(line => (
         <div
           key={line.id}
-          className="absolute left-0 w-full h-px bg-linear-to-r from-transparent via-cyan-500/20 to-transparent"
+          className="absolute left-0 w-full h-px bg-linear-to-r from-transparent via-green-500/20 to-transparent"
           style={{
             top: `${line.top}%`,
             animation: `scanLine 2s linear infinite`,
