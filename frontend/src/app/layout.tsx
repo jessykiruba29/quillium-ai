@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter, Orbitron, Rajdhani } from 'next/font/google'
 import './globals.css'
-import { Header } from './components/layout/Header'
-import { Footer } from './components/layout/Footer'
 import { MatrixRain } from './components/effects/MatrixRain'
 import { ScanLines } from './components/effects/ScanLines'
+import { RootLayoutClient } from './RootLayoutClient'
 
 
 const orbitron = Orbitron({ 
@@ -21,9 +20,9 @@ const rajdhani = Rajdhani({
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'QUILLIUM | Cyber Learning Platform',
-  description: 'Transform PDFs into interactive cyber-learning experiences with AI-powered quizzes and holographic flashcards',
-  keywords: ['AI Learning', 'PDF Quiz', 'Cyber Education', 'Flashcards', 'Interactive Learning'],
+  title: 'QUILLIUM | Learning Platform',
+  description: 'Transform PDFs into interactive learning experiences with AI-powered quizzes and smart flashcards',
+  keywords: ['AI Learning', 'PDF Quiz', 'Education', 'Flashcards', 'Interactive Learning'],
 }
 
 export default function RootLayout({
@@ -34,23 +33,19 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${orbitron.variable} ${rajdhani.variable}`}>
       <body className={`${inter.className} bg-black text-white overflow-x-hidden`}>
-       
-          {/* Background Effects */}
-          <MatrixRain intensity={0.1} />
-          <ScanLines />
-          
-          {/* Glow Effects */}
-          <div className="fixed top-0 left-0 w-full h-96 bg-linear-to-b from-cyan-500/10 via-purple-500/5 to-transparent -z-10 blur-3xl" />
-          <div className="fixed bottom-0 right-0 w-96 h-96 bg-linear-to-t from-pink-500/10 via-cyan-500/5 to-transparent -z-10 blur-3xl" />
-          
-          <div className="relative min-h-screen flex flex-col">
-            <Header />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </div>
+        {/* Background Effects */}
+        <MatrixRain intensity={0.1} />
+        <ScanLines />
         
+        {/* Glow Effects */}
+        <div className="fixed top-0 left-0 w-full h-96 bg-linear-to-b from-green-500/10 via-emerald-500/5 to-transparent -z-10 blur-3xl" />
+        <div className="fixed bottom-0 right-0 w-96 h-96 bg-linear-to-t from-teal-500/10 via-green-500/5 to-transparent -z-10 blur-3xl" />
+        
+        <div className="relative min-h-screen flex flex-col">
+          <RootLayoutClient>
+            {children}
+          </RootLayoutClient>
+        </div>
       </body>
     </html>
   )

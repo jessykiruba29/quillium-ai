@@ -15,32 +15,32 @@ export const Hero = ({ onGetStarted }: HeroProps) => {
       icon: FileText,
       title: 'PDF Intelligence',
       description: 'Extract knowledge from any document format',
-      color: 'text-cyan-400',
+      color: 'text-green-400',
     },
     {
       icon: Brain,
       title: 'AI-Powered Quizzes',
       description: 'Smart, adaptive question generation',
-      color: 'text-purple-400',
+      color: 'text-green-400',
     },
     {
       icon: Zap,
       title: 'Instant Learning',
       description: 'Real-time feedback & progress tracking',
-      color: 'text-pink-400',
+      color: 'text-green-400',
     },
     {
       icon: Sparkles,
-      title: 'Cyber Interface',
-      description: 'Futuristic, immersive experience',
-      color: 'text-cyan-300',
+      title: 'Smart Interface',
+      description: 'Simple, intuitive experience',
+      color: 'text-green-300',
     },
   ]
 
   return (
     <div className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
       {/* Animated background elements */}
-      <div className="absolute inset-0 bg-linear-to-br from-black via-purple-900/10 to-cyan-900/10" />
+      <div className="absolute inset-0 bg-linear-to-br from-black via-emerald-900/10 to-green-900/10" />
       
       <div className="container mx-auto px-4 py-16 relative z-10">
         <div className="max-w-6xl mx-auto">
@@ -53,9 +53,9 @@ export const Hero = ({ onGetStarted }: HeroProps) => {
           >
             {/* Main Title */}
             <div className="mb-8">
-              <div className="inline-flex items-center gap-3 mb-4 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/30">
-                <Sparkles className="w-5 h-5 text-cyan-400" />
-                <span className="text-cyan-400 text-sm font-medium">BETA ACCESS ACTIVE</span>
+              <div className="inline-flex items-center gap-3 mb-4 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/30">
+                <Sparkles className="w-5 h-5 text-green-400" />
+                <span className="text-green-400 text-sm font-medium">AI powered learning tool</span>
               </div>
               
               <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6">
@@ -70,7 +70,7 @@ export const Hero = ({ onGetStarted }: HeroProps) => {
               
               <p className="text-xl md:text-2xl text-white/70 max-w-3xl mx-auto font-light">
                 Upload any PDF. Get interactive quizzes, holographic flashcards, and 
-                <span className="text-cyan-400"> AI-powered insights</span> instantly.
+                <span className="text-green-400"> AI-powered insights</span> instantly.
               </p>
             </div>
 
@@ -93,7 +93,7 @@ export const Hero = ({ onGetStarted }: HeroProps) => {
                 <span>See Features</span>
               </HolographicButton>
             </div>
-
+          <br></br>
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
               {[
@@ -109,7 +109,7 @@ export const Hero = ({ onGetStarted }: HeroProps) => {
                   transition={{ delay: 0.2 + index * 0.1 }}
                   className="text-center"
                 >
-                  <div className="text-3xl md:text-4xl font-bold text-cyan-400 mb-1">
+                  <div className="text-3xl md:text-4xl font-bold text-green-400 mb-1">
                     {stat.value}
                   </div>
                   <div className="text-white/50 text-sm font-medium">
@@ -143,7 +143,7 @@ export const Hero = ({ onGetStarted }: HeroProps) => {
                     <div className={`p-3 rounded-xl bg-linear-to-br from-${feature.color.split('-')[1]}-500/20 to-transparent border border-${feature.color.split('-')[1]}-500/30`}>
                       <Icon className={`w-6 h-6 ${feature.color}`} />
                     </div>
-                    <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">
+                    <h3 className="text-lg font-bold text-white group-hover:text-green-300 transition-colors">
                       {feature.title}
                     </h3>
                   </div>
@@ -152,7 +152,7 @@ export const Hero = ({ onGetStarted }: HeroProps) => {
                   </p>
                   
                   {/* Hover line */}
-                  <div className="h-0.5 bg-linear-to-r from-transparent via-cyan-500 to-transparent w-0 group-hover:w-full transition-all duration-500 mt-4" />
+                  <div className="h-0.5 bg-linear-to-r from-transparent via-green-500 to-transparent w-0 group-hover:w-full transition-all duration-500 mt-4" />
                 </motion.div>
               )
             })}
@@ -165,10 +165,10 @@ export const Hero = ({ onGetStarted }: HeroProps) => {
             className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
           >
             <div className="text-center">
-              <div className="w-6 h-10 rounded-full border-2 border-cyan-500/50 mx-auto mb-2 relative">
-                <div className="w-1 h-3 bg-cyan-400 rounded-full absolute top-2 left-1/2 transform -translate-x-1/2 animate-bounce" />
+              <div className="w-6 h-10 rounded-full border-2 border-green-500/50 mx-auto mb-2 relative">
+                <div className="w-1 h-3 bg-green-400 rounded-full absolute top-2 left-1/2 transform -translate-x-1/2 animate-bounce" />
               </div>
-              <span className="text-cyan-400/70 text-sm font-mono">SCROLL</span>
+              <span className="text-green-400/70 text-sm font-mono">SCROLL</span>
             </div>
           </motion.div>
         </div>

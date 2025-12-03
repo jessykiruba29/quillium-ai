@@ -1,76 +1,126 @@
 import os
 import json
-import requests
+import re
 from typing import List, Dict, Optional
 import google.generativeai as genai
 
+def init_translator():
+    """Dummy function to maintain compatibility with existing imports."""
+    print("✅ Translator initialized (using Gemini for translations)")
+    return None
+
 def make_mcqs(text: str, language: str = "English", max_questions: int = 20) -> List[Dict]:
-    """Generate MCQs directly using Gemini API - SIMPLE VERSION"""
+    """Generate MCQs in English first, then translate to target language."""
+    
+    print(f"\n{'='*70}")
+    print(f"🔧 MAKE_MCQS: Starting with language='{language}', max_questions={max_questions}")
+    print(f"{'='*70}")
     
     # Clean text
     text = text.strip()
     if len(text) < 50:
+        print("❌ Text too short (< 50 chars)")
         return []
     
     # If text is too long, truncate it
     if len(text) > 6000:
+        print(f"⚠️ Text too long ({len(text)} chars), truncating to 6000")
         text = text[:6000] + "... [text truncated]"
     
     # Get API key
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
-        print("❌ GEMINI_API_KEY not found in environment variables")
+        print("❌ GEMINI_API_KEY not found in environment variables!")
+        print("   Please set GEMINI_API_KEY in your .env file")
         return generate_fallback_mcqs(text, max_questions)
     
+    print(f"✓ API key loaded: {api_key[:20]}...")
+    
     try:
-        # Configure Gemini
-        genai.configure(api_key=api_key)
+        # Step 1: ALWAYS generate in English first
+        print("📝 Step 1: Generating MCQs in English...")
+        english_mcqs = generate_english_mcqs(text, max_questions, api_key)
         
-        # Use the latest available model
+        if not english_mcqs:
+            print("❌ Failed to generate English MCQs")
+            return generate_fallback_mcqs(text, max_questions)
+        
+        print(f"✅ Step 1 Complete: Generated {len(english_mcqs)} English MCQs")
+        
+        # Log first English question as reference
+        if english_mcqs:
+            print(f"   First Q (EN): {english_mcqs[0]['question'][:60]}...")
+        
+        # Step 2: If language is English, return as is
+        if language.lower() == "english":
+            print(f"✅ Language is English, returning MCQs as-is")
+            return english_mcqs[:max_questions]
+        
+        # Step 3: Translate to target language
+        print(f"🌍 Step 2: Translating {len(english_mcqs)} MCQs to {language}...")
+        translated_mcqs = translate_mcqs_to_language(english_mcqs, language, api_key)
+        
+        if translated_mcqs and len(translated_mcqs) > 0:
+            print(f"✅ Step 2 Complete: Translated to {language}")
+            
+            # Verify translation actually happened
+            if translated_mcqs[0]['question'] != english_mcqs[0]['question']:
+                print(f"   ✓ Confirmed: Question was translated")
+                print(f"   First Q ({language}): {translated_mcqs[0]['question'][:60]}...")
+            else:
+                print(f"   ⚠️ Warning: Question appears unchanged after translation")
+            
+            return translated_mcqs[:max_questions]
+        else:
+            print(f"⚠️ Translation returned empty, using English MCQs")
+            return english_mcqs[:max_questions]
+        
+    except Exception as e:
+        print(f"❌ Error in make_mcqs: {e}")
+        import traceback
+        traceback.print_exc()
+        return generate_fallback_mcqs(text, max_questions)
+
+def generate_english_mcqs(text: str, max_questions: int, api_key: str) -> List[Dict]:
+    """Generate MCQs in English using Gemini."""
+    try:
+        genai.configure(api_key=api_key)
         model = genai.GenerativeModel('gemini-2.5-flash-lite')
         
-        # Create a clear, strict prompt
         prompt = f"""
 Generate exactly {max_questions} multiple choice questions (MCQs) from the following text.
 Each question MUST have exactly 4 options, with ONE correct answer.
 
 IMPORTANT RULES:
-1. Make questions MEANINGFUL - test real understanding, not just trivia
+1. Make questions MEANINGFUL - test real understanding
 2. Make ALL options PLAUSIBLE and SPECIFIC
-3. NEVER use vague options like: "wrong answer", "incorrect concept", "different perspective", "alternative interpretation", "common misconception"
+3. NEVER use vague options like: "wrong answer", "incorrect concept", "different perspective"
 4. For "Who" questions: Use SPECIFIC PERSON NAMES as distractors
-5. For "What/When/Where/Why" questions: Use SPECIFIC facts/terms/concepts as distractors
-6. All options should be complete phrases/sentences (not single words unless appropriate)
-7. Difficulty should vary: easy, medium, hard
+5. For other questions: Use SPECIFIC facts/terms/concepts as distractors
 
 FORMAT STRICTLY AS JSON:
 [
   {{
-    "question": "Clear question here?",
-    "answer": "The exact correct answer (must match one option exactly)",
-    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "question": "Question here?",
+    "answer": "Correct answer",
+    "options": ["Correct", "Distractor 1", "Distractor 2", "Distractor 3"],
     "difficulty": "easy|medium|hard"
   }}
 ]
 
-EXAMPLES OF GOOD OPTIONS:
+EXAMPLES OF GOOD DISTRACTORS:
 Question: "Who coined the term 'Artificial Intelligence'?"
-Good options: ["John McCarthy", "Alan Turing", "Marvin Minsky", "Herbert Simon"]
-Bad options: ["A different scientist", "Not John McCarthy", "Someone else", "Wrong person"]
+Good distractors: ["Alan Turing", "Marvin Minsky", "Herbert Simon"]
+BAD distractors: ["A different scientist", "Not John McCarthy", "Someone else"]
 
-Question: "What is the capital of France?"
-Good options: ["Paris", "London", "Berlin", "Madrid"]
-Bad options: ["Not Paris", "Different city", "Some European capital", "Incorrect answer"]
-
-TEXT TO ANALYZE:
+TEXT:
 {text}
 
-IMPORTANT: Return ONLY the JSON array. No explanations, no extra text.
+Return ONLY the JSON array. No explanations.
 """
         
-        print("🤖 Asking Gemini to generate MCQs...")
+        print("🤖 Generating English MCQs with Gemini...")
         
-        # Generate content
         response = model.generate_content(
             prompt,
             generation_config={
@@ -80,41 +130,167 @@ IMPORTANT: Return ONLY the JSON array. No explanations, no extra text.
         )
         
         raw_output = response.text.strip()
-        print(f"✅ Received response from Gemini")
+        print(f"✅ Received Gemini response")
         
-        # Clean the response
-        if raw_output.startswith("```json"):
-            raw_output = raw_output[7:]
-        if raw_output.endswith("```"):
-            raw_output = raw_output[:-3]
-        raw_output = raw_output.strip()
+        # Clean JSON
+        raw_output = clean_json_response(raw_output)
         
-        # Try to parse JSON
+        # Parse JSON
         try:
             mcqs = json.loads(raw_output)
         except json.JSONDecodeError as e:
             print(f"❌ Failed to parse JSON: {e}")
-            print(f"Raw output: {raw_output[:200]}...")
-            return generate_fallback_mcqs(text, max_questions)
+            print(f"Raw output preview: {raw_output[:500]}")
+            return []
         
-        # Validate and clean each MCQ
+        # Validate each MCQ
         validated_mcqs = []
-        for mcq in mcqs[:max_questions]:  # Ensure we don't exceed max_questions
+        for mcq in mcqs[:max_questions]:
             validated = validate_mcq(mcq)
             if validated:
                 validated_mcqs.append(validated)
         
-        print(f"✅ Generated {len(validated_mcqs)} valid MCQs")
-        
-        # Translate if needed
-        if language != "English" and validated_mcqs:
-            validated_mcqs = translate_mcqs_gemini(validated_mcqs, language, api_key)
-        
-        return validated_mcqs[:max_questions]
+        print(f"✅ Validated {len(validated_mcqs)} English MCQs")
+        return validated_mcqs
         
     except Exception as e:
-        print(f"❌ Gemini API error: {e}")
-        return generate_fallback_mcqs(text, max_questions)
+        print(f"❌ Error generating English MCQs: {e}")
+        return []
+
+def translate_mcqs_to_language(english_mcqs: List[Dict], target_lang: str, api_key: str) -> List[Dict]:
+    """Translate English MCQs to target language using a simpler, more reliable approach."""
+    if target_lang.lower() == "english" or not english_mcqs:
+        print(f"⏭️ [TRANSLATE] Skipping translation - target is English or no MCQs")
+        return english_mcqs
+    
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-2.5-flash-lite')
+        
+        print(f"\n{'='*70}")
+        print(f"🔄 [TRANSLATE] Starting translation of {len(english_mcqs)} MCQs to {target_lang}")
+        print(f"{'='*70}\n")
+        
+        # Translate each MCQ individually for better reliability
+        translated_mcqs = []
+        
+        for idx, mcq in enumerate(english_mcqs):
+            try:
+                print(f"[TRANSLATE] MCQ {idx + 1}/{len(english_mcqs)}")
+                print(f"  EN Question: {mcq['question'][:60]}...")
+                
+                # Build individual translation prompt - ULTRA EXPLICIT
+                prompt = f"""You MUST translate this MCQ to {target_lang}. Output ONLY JSON.
+
+English question: {mcq['question']}
+
+STRICT INSTRUCTIONS:
+- Translate the ENTIRE question to {target_lang}
+- Translate the ENTIRE answer to {target_lang}  
+- Translate EVERY option to {target_lang}
+- Make sure the translated answer matches one of the translated options
+- Keep "difficulty" as-is
+- ONLY return valid JSON, no explanations
+
+Here is the English MCQ to translate:
+{json.dumps(mcq, ensure_ascii=False)}
+
+Return ONLY this JSON format with translations in {target_lang}:
+{{
+  "question": "[TRANSLATE TO {target_lang}]",
+  "answer": "[TRANSLATE TO {target_lang}]",
+  "options": ["[TRANSLATE]", "[TRANSLATE]", "[TRANSLATE]", "[TRANSLATE]"],
+  "difficulty": "[KEEP SAME]"
+}}"""
+                
+                response = model.generate_content(
+                    prompt,
+                    generation_config={
+                        "temperature": 0.2,
+                        "max_output_tokens": 1000,
+                    }
+                )
+                
+                raw_output = response.text.strip()
+                print(f"  Raw response: {raw_output[:100]}...")
+                
+                # Clean JSON
+                raw_output = clean_json_response(raw_output)
+                
+                # Parse
+                try:
+                    translated_mcq = json.loads(raw_output)
+                    
+                    # Validate
+                    if all(k in translated_mcq for k in ['question', 'answer', 'options']):
+                        # Double check it's actually translated
+                        orig_q = mcq['question'].lower()
+                        trans_q = translated_mcq['question'].lower()
+                        
+                        if orig_q != trans_q:
+                            print(f"  ✅ Translated: {translated_mcq['question'][:60]}...")
+                            translated_mcqs.append(translated_mcq)
+                        else:
+                            print(f"  ⚠️ Not actually translated, using English")
+                            translated_mcqs.append(mcq)
+                    else:
+                        print(f"  ❌ Missing fields in response")
+                        translated_mcqs.append(mcq)
+                        
+                except json.JSONDecodeError as e:
+                    print(f"  ❌ JSON parse error: {e}")
+                    print(f"     Response was: {raw_output[:200]}")
+                    translated_mcqs.append(mcq)
+                    
+            except Exception as e:
+                print(f"  ❌ Error: {e}")
+                translated_mcqs.append(mcq)
+        
+        print(f"\n{'='*70}")
+        print(f"✅ [TRANSLATE] Complete: {len(translated_mcqs)} MCQs processed for {target_lang}")
+        print(f"{'='*70}\n")
+        
+        # Verify at least some translations happened
+        orig_first = english_mcqs[0]['question']
+        trans_first = translated_mcqs[0]['question']
+        
+        if orig_first.lower() == trans_first.lower():
+            print(f"⚠️ [TRANSLATE] WARNING: First question unchanged!")
+            print(f"   EN: {orig_first}")
+            print(f"   TR: {trans_first}")
+        else:
+            print(f"✓ [TRANSLATE] Confirmed translation happened")
+            print(f"   EN: {orig_first[:60]}...")
+            print(f"   {target_lang}: {trans_first[:60]}...")
+        
+        return translated_mcqs
+        
+    except Exception as e:
+        print(f"❌ [TRANSLATE] Fatal error: {e}")
+        import traceback
+        traceback.print_exc()
+        print(f"⚠️ [TRANSLATE] Returning English MCQs as fallback")
+        return english_mcqs
+
+def clean_json_response(raw_output: str) -> str:
+    """Clean and extract JSON from Gemini response."""
+    # Remove markdown code blocks
+    if raw_output.startswith("```json"):
+        raw_output = raw_output[7:]
+    elif raw_output.startswith("```"):
+        raw_output = raw_output[3:]
+    
+    if raw_output.endswith("```"):
+        raw_output = raw_output[:-3]
+    
+    raw_output = raw_output.strip()
+    
+    # Extract JSON array if wrapped in text
+    json_match = re.search(r'\[\s*\{.*?\}\s*\]', raw_output, re.DOTALL)
+    if json_match:
+        raw_output = json_match.group(0)
+    
+    return raw_output
 
 def validate_mcq(mcq: Dict) -> Optional[Dict]:
     """Validate and clean a single MCQ."""
@@ -130,31 +306,41 @@ def validate_mcq(mcq: Dict) -> Optional[Dict]:
     if not question or not answer or not options:
         return None
     
-    if len(options) != 4:
+    # Ensure we have 4 options
+    if len(options) < 4:
         return None
     
+    # Ensure answer is in options
     if answer not in options:
-        # If answer doesn't match any option, use the first option as answer
-        answer = options[0]
+        # Check case-insensitive match
+        answer_lower = answer.lower()
+        for opt in options:
+            if opt.lower() == answer_lower:
+                answer = opt  # Update to match case
+                break
+        else:
+            # If still not found, use first option
+            answer = options[0]
     
-    # Clean options
+    # Clean options - remove vague ones
     cleaned_options = []
     seen = set()
+    
+    vague_terms = [
+        "wrong", "incorrect", "not correct", "false", "invalid",
+        "different concept", "alternative perspective", "common misconception",
+        "broader interpretation", "related but different", "someone else",
+        "not this", "other answer", "another option"
+    ]
     
     for opt in options:
         opt_str = str(opt).strip()
         if not opt_str:
             continue
         
-        # Skip if too vague
         opt_lower = opt_str.lower()
-        vague_terms = [
-            "wrong", "incorrect", "not correct", "false", "invalid",
-            "different concept", "alternative perspective", "common misconception",
-            "broader interpretation", "related but different", "someone else",
-            "not this", "other answer", "another option"
-        ]
         
+        # Skip if too vague
         if any(term in opt_lower for term in vague_terms):
             continue
         
@@ -165,22 +351,20 @@ def validate_mcq(mcq: Dict) -> Optional[Dict]:
         seen.add(opt_lower)
         cleaned_options.append(opt_str)
     
-    # Ensure we have 4 options
-    if len(cleaned_options) < 4:
-        # Add meaningful fillers
-        while len(cleaned_options) < 4:
-            filler = generate_meaningful_filler(question, answer, len(cleaned_options))
-            if filler.lower() not in seen:
-                seen.add(filler.lower())
-                cleaned_options.append(filler)
+    # Ensure we have 4 quality options
+    while len(cleaned_options) < 4:
+        filler = generate_meaningful_filler(question, answer, len(cleaned_options))
+        filler_lower = filler.lower()
+        if filler_lower not in seen:
+            seen.add(filler_lower)
+            cleaned_options.append(filler)
     
-    # Update answer if it was removed during cleaning
+    # Ensure answer is in cleaned options
     if answer not in cleaned_options:
         answer = cleaned_options[0]
     
     # Validate difficulty
     if difficulty not in ["easy", "medium", "hard"]:
-        # Auto-determine difficulty
         total_words = len(question.split()) + len(answer.split())
         if total_words < 20:
             difficulty = "easy"
@@ -192,95 +376,40 @@ def validate_mcq(mcq: Dict) -> Optional[Dict]:
     return {
         "question": question,
         "answer": answer,
-        "options": cleaned_options[:4],  # Ensure exactly 4
+        "options": cleaned_options[:4],
         "difficulty": difficulty
     }
 
 def generate_meaningful_filler(question: str, answer: str, index: int) -> str:
-    """Generate a meaningful filler option based on question context."""
+    """Generate a meaningful filler option."""
     question_lower = question.lower()
     
     if question_lower.startswith("who"):
-        # Person-based fillers
-        people = ["Albert Einstein", "Marie Curie", "Isaac Newton", "Charles Darwin", 
-                  "Alan Turing", "Stephen Hawking", "Thomas Edison", "Nikola Tesla"]
+        people = ["Alan Turing", "Isaac Newton", "Marie Curie", "Charles Darwin"]
         return people[index % len(people)]
     
     elif "capital" in question_lower:
-        # Capital cities
-        capitals = ["London", "Berlin", "Tokyo", "Beijing", "Moscow", "Delhi", "Canberra", "Ottawa"]
+        capitals = ["London", "Berlin", "Tokyo", "Beijing"]
         return capitals[index % len(capitals)]
     
     elif any(term in question_lower for term in ["year", "when", "date"]):
-        # Years
-        years = ["1945", "1969", "1776", "2001", "1492", "1914", "1989", "2008"]
+        years = ["1945", "1969", "1776", "2001"]
         return years[index % len(years)]
     
     else:
-        # Generic but meaningful fillers
         generic = [
-            "A closely related but distinct concept",
+            "A related concept from the same field",
             "An important but different aspect",
             "A frequently confused alternative",
-            "A similar but not identical element"
+            "A similar but distinct element"
         ]
         return generic[index % len(generic)]
 
-def translate_mcqs_gemini(mcqs: List[Dict], target_lang: str, api_key: str) -> List[Dict]:
-    """Translate MCQs using Gemini."""
-    if target_lang == "English" or not mcqs:
-        return mcqs
-    
-    print(f"🌐 Translating MCQs to {target_lang}...")
-    
-    try:
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-2.5-flash-lite')
-        
-        prompt = f"""
-Translate the following JSON array of multiple choice questions to {target_lang}.
-Translate ALL text including questions, answers, and options.
-Maintain the EXACT same JSON structure.
-
-IMPORTANT: 
-1. Keep the answer matching exactly one of the translated options
-2. Don't change the order of options
-3. Return ONLY the JSON array
-
-JSON to translate:
-{json.dumps(mcqs, ensure_ascii=False, indent=2)}
-"""
-        
-        response = model.generate_content(
-            prompt,
-            generation_config={
-                "temperature": 0.1,
-                "max_output_tokens": 4000,
-            }
-        )
-        
-        raw_output = response.text.strip()
-        
-        # Clean JSON
-        if raw_output.startswith("```json"):
-            raw_output = raw_output[7:]
-        if raw_output.endswith("```"):
-            raw_output = raw_output[:-3]
-        raw_output = raw_output.strip()
-        
-        translated_mcqs = json.loads(raw_output)
-        return translated_mcqs
-        
-    except Exception as e:
-        print(f"⚠️ Translation failed: {e}")
-        return mcqs  # Return original if translation fails
-
 def generate_fallback_mcqs(text: str, max_questions: int) -> List[Dict]:
-    """Generate simple fallback MCQs if Gemini fails."""
+    """Generate simple fallback MCQs."""
     print("⚠️ Using fallback MCQ generation")
     
-    # Simple sentence-based questions
-    sentences = [s.strip() for s in text.split('.') if len(s.strip()) > 20]
+    sentences = [s.strip() for s in re.split(r'[.!?]', text) if len(s.strip()) > 20]
     
     mcqs = []
     for i in range(min(max_questions, len(sentences))):
@@ -295,7 +424,7 @@ def generate_fallback_mcqs(text: str, max_questions: int) -> List[Dict]:
                 sentences[i],
                 "A different concept from the text",
                 "An alternative interpretation",
-                "Related information not mentioned here"
+                "Related information"
             ],
             "difficulty": "medium"
         })
@@ -304,9 +433,12 @@ def generate_fallback_mcqs(text: str, max_questions: int) -> List[Dict]:
 
 def make_flashcards(text: str, lang: str = "English", max_cards: int = 20) -> List[Dict]:
     """Generate flashcards from text."""
-    mcqs = make_mcqs(text, language="English", max_questions=max_cards)
+    print(f"📚 Generating flashcards in {lang}...")
     
-    # Convert to flashcards (just Q&A)
+    # Generate MCQs (this will handle translation if needed)
+    mcqs = make_mcqs(text, language=lang, max_questions=max_cards)
+    
+    # Convert to flashcards
     flashcards = []
     for mcq in mcqs:
         flashcards.append({
@@ -314,62 +446,62 @@ def make_flashcards(text: str, lang: str = "English", max_cards: int = 20) -> Li
             "answer": mcq["answer"]
         })
     
-    # Translate if needed
-    if lang != "English" and flashcards:
-        # Reuse the translation function
-        api_key = os.environ.get("GEMINI_API_KEY")
-        if api_key:
-            try:
-                # Convert flashcards to MCQ-like format for translation
-                temp_mcqs = []
-                for card in flashcards:
-                    temp_mcqs.append({
-                        "question": card["question"],
-                        "answer": card["answer"],
-                        "options": [card["answer"]],  # Minimal options
-                        "difficulty": "medium"
-                    })
-                
-                translated = translate_mcqs_gemini(temp_mcqs, lang, api_key)
-                
-                # Convert back to flashcards
-                flashcards = []
-                for item in translated:
-                    flashcards.append({
-                        "question": item["question"],
-                        "answer": item["answer"]
-                    })
-            except:
-                pass  # Keep original if translation fails
-    
+    print(f"✅ Generated {len(flashcards)} flashcards in {lang}")
     return flashcards[:max_cards]
 
-# Simple usage example
+def translate_text(text: str, target_lang: str) -> str:
+    """Simple translation function for compatibility."""
+    if target_lang == "English":
+        return text
+    
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        return text
+    
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-2.5-flash-lite')
+        
+        prompt = f"Translate this to {target_lang}: {text}"
+        response = model.generate_content(prompt)
+        return response.text.strip()
+    except:
+        return text
+
+# Test the function
 if __name__ == "__main__":
     # Test with sample text
     sample_text = """
-    Artificial Intelligence (AI) was coined by John McCarthy in 1956 at the Dartmouth Conference.
-    McCarthy defined AI as "the science and engineering of making intelligent machines."
-    The field has since grown to include machine learning, natural language processing, and computer vision.
-    Alan Turing, another pioneer, proposed the Turing Test in 1950 to measure machine intelligence.
+    Artificial Intelligence (AI) was coined by John McCarthy in 1956.
+    McCarthy defined AI as "the science of making intelligent machines."
+    Machine learning is a subset of AI that focuses on algorithms.
     """
     
-    # Set your API key
+    # Set API key
     os.environ["GEMINI_API_KEY"] = "your-api-key-here"
     
-    # Generate MCQs
-    mcqs = make_mcqs(sample_text, language="English", max_questions=5)
+    print("\n" + "="*60)
+    print("TEST 1: English MCQs")
+    print("="*60)
+    english_mcqs = make_mcqs(sample_text, language="English", max_questions=2)
+    for i, mcq in enumerate(english_mcqs):
+        print(f"\n{i+1}. {mcq['question']}")
+        print(f"   ✓ Answer: {mcq['answer']}")
+        print(f"   Options: {mcq['options']}")
     
-    print(f"\nGenerated {len(mcqs)} MCQs:")
-    for i, mcq in enumerate(mcqs, 1):
-        print(f"\n{i}. {mcq['question']}")
-        print(f"   Difficulty: {mcq['difficulty']}")
-        for j, option in enumerate(mcq['options']):
-            prefix = "✓" if option == mcq['answer'] else " "
-            print(f"   {prefix} {chr(65+j)}. {option}")
-
-
-def init_translator():
-    """Dummy function to maintain compatibility with existing imports."""
-    print("✅ Translator initialized (using Gemini for translations)")
-    return None
+    print("\n" + "="*60)
+    print("TEST 2: Spanish MCQs")
+    print("="*60)
+    spanish_mcqs = make_mcqs(sample_text, language="Spanish", max_questions=2)
+    for i, mcq in enumerate(spanish_mcqs):
+        print(f"\n{i+1}. {mcq['question']}")
+        print(f"   ✓ Answer: {mcq['answer']}")
+        print(f"   Options: {mcq['options']}")
+    
+    print("\n" + "="*60)
+    print("TEST 3: French Flashcards")
+    print("="*60)
+    french_flashcards = make_flashcards(sample_text, lang="French", max_cards=2)
+    for i, card in enumerate(french_flashcards):
+        print(f"\n{i+1}. Q: {card['question']}")
+        print(f"   A: {card['answer']}")

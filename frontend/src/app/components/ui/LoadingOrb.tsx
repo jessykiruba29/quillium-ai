@@ -68,7 +68,7 @@ export const LoadingOrb = () => {
                 ease: "easeInOut",
                 delay: angle / 360
               }}
-              className="w-2 h-2 rounded-full bg-cyan-400 absolute"
+              className="w-2 h-2 rounded-full bg-green-400 absolute"
               style={{
                 transform: `rotate(${angle}deg) translateX(48px)`,
               }}
@@ -87,7 +87,7 @@ export const LoadingOrb = () => {
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute inset-0 rounded-full border-2 border-cyan-500/20"
+          className="absolute inset-0 rounded-full border-2 border-green-500/20"
         />
       </motion.div>
     </div>

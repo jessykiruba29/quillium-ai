@@ -71,9 +71,9 @@ export const FlashcardHolo = ({ flashcards, onStudy, onBack, language='English' 
       <div className="container mx-auto px-4 py-12">
         <CyberBorder>
           <div className="p-12 text-center">
-            <Layers className="w-16 h-16 text-cyan-400 mx-auto mb-4" />
+            <Layers className="w-16 h-16 text-green-400 mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-white mb-2">No Flashcards Generated</h3>
-            <p className="text-cyan-400/70 mb-6">Upload a document to create quantum flashcards</p>
+            <p className="text-green-400/70 mb-6">Upload a document to create flashcards</p>
             <HolographicButton onClick={onBack}>
               Upload Document
             </HolographicButton>
@@ -91,26 +91,26 @@ export const FlashcardHolo = ({ flashcards, onStudy, onBack, language='English' 
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
             <div>
               <h2 className="text-3xl font-bold mb-2">
-                <GradientText text="HOLOGRAPHIC FLASHCARDS" gradient="cyber" />
+                <GradientText text="STUDY CARDS" gradient="cyber" />
               </h2>
-              <p className="text-cyan-400/70">Flip cards to reveal quantum knowledge</p>
+              <p className="text-green-400/70">Flip cards to reveal knowledge</p>
             </div>
             <div className="flex items-center gap-2 mb-4">
-      <div className="px-3 py-1 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-400 text-sm">
+      <div className="px-3 py-1 rounded-full bg-green-500/20 border border-green-500/30 text-green-400 text-sm">
         {language}
       </div>
     </div>
             
             {/* Stats */}
             <div className="flex gap-4">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 border border-cyan-500/30">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 border border-green-500/30">
                 <Star className="w-5 h-5 text-yellow-400" />
                 <span className="font-mono text-lg font-bold text-yellow-300">{studiedCards.size}/{flashcards.length}</span>
               </div>
               
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 border border-purple-500/30">
-                <Zap className="w-5 h-5 text-purple-400" />
-                <span className="font-mono text-lg font-bold text-purple-300">{currentIndex + 1}/{flashcards.length}</span>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 border border-emerald-500/30">
+                <Zap className="w-5 h-5 text-emerald-400" />
+                <span className="font-mono text-lg font-bold text-emerald-300">{currentIndex + 1}/{flashcards.length}</span>
               </div>
             </div>
           </div>
@@ -123,7 +123,7 @@ export const FlashcardHolo = ({ flashcards, onStudy, onBack, language='English' 
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1.5 }}
                 exit={{ opacity: 0, scale: 2 }}
-                className="absolute inset-0 bg-linear-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-xl -z-10"
+                className="absolute inset-0 bg-linear-to-r from-green-500/20 via-emerald-500/20 to-teal-500/20 rounded-3xl blur-xl -z-10"
               />
             )}
 
@@ -139,7 +139,7 @@ export const FlashcardHolo = ({ flashcards, onStudy, onBack, language='English' 
                 className="relative cursor-pointer group min-h-[400px]"
               >
                 {/* Card Base */}
-                <div className="absolute inset-0 rounded-3xl bg-linear-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 border border-white/20 backdrop-blur-md" />
+                <div className="absolute inset-0 rounded-3xl bg-linear-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-white/20 backdrop-blur-md" />
                 
                 {/* Card Content */}
                 <div className="relative p-8 lg:p-12 min-h-[400px] flex flex-col items-center justify-center">
@@ -153,7 +153,7 @@ export const FlashcardHolo = ({ flashcards, onStudy, onBack, language='English' 
                         className="text-center space-y-6"
                       >
                         <div className="mb-4">
-                          <span className="px-4 py-2 rounded-full bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-sm font-medium">
+                          <span className="px-4 py-2 rounded-full bg-green-500/20 border border-green-500/30 text-green-400 text-sm font-medium">
                             QUESTION
                           </span>
                         </div>
@@ -162,7 +162,7 @@ export const FlashcardHolo = ({ flashcards, onStudy, onBack, language='English' 
                           {currentCard.question}
                         </h3>
                         
-                        <p className="text-cyan-400/70 text-sm mt-8">
+                        <p className="text-green-400/70 text-sm mt-8">
                           Click card or press SPACE to reveal answer
                         </p>
                       </motion.div>
@@ -184,9 +184,9 @@ export const FlashcardHolo = ({ flashcards, onStudy, onBack, language='English' 
                           {currentCard.answer}
                         </h3>
                         
-                        <div className="flex items-center justify-center gap-2 text-cyan-400/70 text-sm mt-8">
+                        <div className="flex items-center justify-center gap-2 text-green-400/70 text-sm mt-8">
                           <Zap className="w-4 h-4" />
-                          <span>Quantum knowledge absorbed</span>
+                          <span>Well done! Keep learning</span>
                         </div>
                       </motion.div>
                     )}
@@ -194,13 +194,13 @@ export const FlashcardHolo = ({ flashcards, onStudy, onBack, language='English' 
                 </div>
 
                 {/* Corner Accents */}
-                <div className="absolute top-4 left-4 w-8 h-8 border-t border-l border-cyan-500/50 rounded-tl-lg" />
-                <div className="absolute top-4 right-4 w-8 h-8 border-t border-r border-purple-500/50 rounded-tr-lg" />
-                <div className="absolute bottom-4 left-4 w-8 h-8 border-b border-l border-pink-500/50 rounded-bl-lg" />
-                <div className="absolute bottom-4 right-4 w-8 h-8 border-b border-r border-cyan-500/50 rounded-br-lg" />
+                <div className="absolute top-4 left-4 w-8 h-8 border-t border-l border-green-500/50 rounded-tl-lg" />
+                <div className="absolute top-4 right-4 w-8 h-8 border-t border-r border-emerald-500/50 rounded-tr-lg" />
+                <div className="absolute bottom-4 left-4 w-8 h-8 border-b border-l border-teal-500/50 rounded-bl-lg" />
+                <div className="absolute bottom-4 right-4 w-8 h-8 border-b border-r border-green-500/50 rounded-br-lg" />
 
                 {/* Hover Glow */}
-                <div className="absolute inset-0 rounded-3xl bg-linear-to-r from-cyan-500/0 via-cyan-500/10 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 rounded-3xl bg-linear-to-r from-green-500/0 via-green-500/10 to-green-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
             </motion.div>
 

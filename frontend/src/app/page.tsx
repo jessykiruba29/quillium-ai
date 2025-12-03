@@ -9,7 +9,6 @@ import { QuizInterface } from './components/sections/Quiz'
 import { FlashcardHolo } from './components/sections/Flashcards'
 import { ProgressDashboard } from './components/sections/Progress'
 import { LanguageSelector } from './components/sections/Language'
-import { Navigation } from './components/layout/Navigation'
 import { LoadingOrb } from './components/ui/LoadingOrb'
 import { StarField } from './components/effects/StarField'
 import { uploadPDF } from '@/lib/api/client'
@@ -29,6 +28,7 @@ export default function Home() {
     language: string
   } | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
   const [progress, setProgress] = useState<ProgressData>({
     totalQuestions: 0,
     correctAnswers: 0,
@@ -64,18 +64,41 @@ export default function Home() {
     } catch (error) {
       console.error('Error loading from localStorage:', error)
     }
+
+    // Listen for navigation events from Header
+    const handleNavigation = (e: Event) => {
+      const customEvent = e as CustomEvent<{ view: View }>
+      setCurrentView(customEvent.detail.view)
+    }
+
+    window.addEventListener('navigation', handleNavigation)
+    return () => window.removeEventListener('navigation', handleNavigation)
   }, [])
 
   const handleFileUpload = async (file: File) => {
     setIsProcessing(true)
+    setUploadProgress(0)
     setUploadedFile(file)
     
     try {
+      // Show initial progress
+      setUploadProgress(10)
+      
+      console.log(`📤 Uploading file with language: ${selectedLanguage}`)
+      
       // Pass selected language to API
       const response = await uploadPDF(file, selectedLanguage, 20)
       
+      setUploadProgress(80)
+      
       // Handle API response
       const apiData = response.data || response
+      
+      console.log('📥 API Response received:', {
+        language: selectedLanguage,
+        mcqCount: apiData.mcqs?.length || 0,
+        firstQuestion: apiData.mcqs?.[0]?.question || 'none'
+      })
       
       const formattedData = {
         text: apiData.text || "Text extracted from PDF",
@@ -85,7 +108,25 @@ export default function Home() {
         language: selectedLanguage
       }
       
+      // Check if translation happened
+      if (selectedLanguage !== 'English' && apiData.mcqs?.length > 0) {
+        const firstQuestion = apiData.mcqs[0].question
+        // Check if text appears to be English (only ASCII alphanumeric, common punctuation)
+        // If it contains non-ASCII chars, it's likely translated
+        const isEnglishOnly = /^[A-Za-z0-9\s.,!?'"()\-]*$/.test(firstQuestion)
+        const hasNonAscii = /[^\x00-\x7F]/.test(firstQuestion)
+        
+        if (isEnglishOnly && !hasNonAscii) {
+          console.warn('⚠️ Warning: Questions appear to be in English despite requesting', selectedLanguage)
+          console.warn('First question:', firstQuestion)
+        } else {
+          console.log('✅ Success: Questions appear to be in', selectedLanguage)
+          console.log('First question:', firstQuestion)
+        }
+      }
+      
       setProcessedData(formattedData)
+      setUploadProgress(100)
       
       // Save to localStorage
       try {
@@ -95,10 +136,16 @@ export default function Home() {
         console.error('Failed to save to localStorage:', error)
       }
       
-      setCurrentView('quiz')
-    } catch (error) {
+      setTimeout(() => {
+        setCurrentView('quiz')
+      }, 500)
+      
+    } catch (error: any) {
       console.error('Upload failed:', error)
-      alert('Failed to process PDF. Please try again.')
+      // Show detailed error message from server if available
+      const message = error?.message || (error?.response && error.response.data) || 'Failed to process PDF. Please try again.'
+      alert(message)
+      setUploadProgress(0)
     } finally {
       setIsProcessing(false)
     }
@@ -160,6 +207,7 @@ export default function Home() {
     localStorage.removeItem('quillium_progress')
     localStorage.removeItem('quillium_language')
     setProcessedData(null)
+    setUploadProgress(0)
     setProgress({
       totalQuestions: 0,
       correctAnswers: 0,
@@ -168,6 +216,12 @@ export default function Home() {
       flashcardsStudied: 0,
     })
     setCurrentView('upload')
+  }
+
+  const retryUploadWithLanguage = async () => {
+    if (uploadedFile) {
+      await handleFileUpload(uploadedFile)
+    }
   }
 
   const pageVariants = {
@@ -195,47 +249,69 @@ export default function Home() {
       
       <AnimatePresence mode="wait">
         {currentView === 'hero' && (
-         
+          
             <Hero onGetStarted={() => navigateTo('upload')} />
         )}
 
         {currentView === 'upload' && (
-         
-            <div className="max-w-6xl mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2">
-                  <FileUploadZone 
-                    onFileUpload={handleFileUpload}
-                    isProcessing={isProcessing}
-                  />
-                </div>
-                <div className="lg:col-span-1 space-y-6">
-                  {/* Language Selector */}
-                  <LanguageSelector 
-                    selectedLanguage={selectedLanguage}
-                    onLanguageChange={handleLanguageChange}
-                  />
-                  
-                  {/* Processing Indicator */}
-                  {isProcessing && (
-                    <div className="holographic-card p-6 rounded-2xl">
+          
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2">
+                <FileUploadZone 
+                  onFileUpload={handleFileUpload}
+                  isProcessing={isProcessing}
+                  uploadProgress={uploadProgress}
+                  selectedLanguage={selectedLanguage}
+                />
+              </div>
+              <div className="lg:col-span-1 space-y-6">
+                {/* Language Selector */}
+                <LanguageSelector 
+                  selectedLanguage={selectedLanguage}
+                  onLanguageChange={handleLanguageChange}
+                />
+                
+                {/* Processing Indicator */}
+                {isProcessing && (
+                  <div className="holographic-card p-6 rounded-2xl">
+                    <div className="flex items-center gap-4 mb-4">
                       <LoadingOrb />
-                      <h3 className="text-xl font-bold text-white mb-2 mt-4">
-                        Processing in {selectedLanguage}
-                      </h3>
-                      <p className="text-cyan-400/70">Translating content...</p>
+                      <div>
+                        <h3 className="text-xl font-bold text-white">
+                          Processing in {selectedLanguage}
+                        </h3>
+                        <p className="text-green-400/70">{uploadProgress}% complete</p>
+                      </div>
                     </div>
-                  )}
-                  
-                  {/* Clear Data Button */}
-                  {processedData && (
-                    <div className="holographic-card p-6 rounded-2xl">
-                      <h3 className="text-xl font-bold text-white mb-2">
-                        Current Language: {selectedLanguage}
+                    <div className="h-2 bg-black/50 rounded-full overflow-hidden">
+                      
+                    </div>
+                  </div>
+                )}
+                
+                {/* Current Data Info */}
+                {processedData && (
+                  <div className="holographic-card p-6 rounded-2xl space-y-4">
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-1">
+                        Current Session
                       </h3>
-                      <p className="text-cyan-400/70 mb-4">
-                        Change language above and re-upload to translate
+                      <p className="text-green-400/70 text-sm">
+                        Language: <span className="text-green-400">{selectedLanguage}</span>
                       </p>
+                      <p className="text-green-400/70 text-sm">
+                        Questions: <span className="text-green-400">{processedData.mcqs.length}</span>
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <button
+                        onClick={retryUploadWithLanguage}
+                        className="w-full px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-xl text-green-400 hover:bg-green-500/30 transition-colors"
+                      >
+                        Re-process with {selectedLanguage}
+                      </button>
+                      
                       <button
                         onClick={clearLocalStorage}
                         className="w-full px-4 py-2 bg-red-500/20 border border-red-500/30 rounded-xl text-red-400 hover:bg-red-500/30 transition-colors"
@@ -243,10 +319,11 @@ export default function Home() {
                         Clear Data & Start Fresh
                       </button>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
+          
         )}
 
         {currentView === 'quiz' && processedData && (
@@ -267,7 +344,7 @@ export default function Home() {
               onBack={() => navigateTo('upload')}
               language={selectedLanguage}
             />
-       
+         
         )}
 
         {currentView === 'progress' && (
@@ -280,11 +357,6 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <Navigation 
-        currentView={currentView}
-        onNavigate={navigateTo}
-        hasData={!!processedData}
-      />
     </div>
   )
 }

@@ -120,18 +120,18 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
             </h2>
             
             <p className="text-white/70 text-lg mb-8">
-              Quantum assessment finished. Results analyzed.
+              Assessment finished. Results analyzed.
             </p>
             
             {/* Score Display */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="holographic-card p-6 rounded-2xl">
-                <div className="text-5xl font-bold text-cyan-400 mb-2">{score}/{mcqs.length}</div>
+                <div className="text-5xl font-bold text-green-400 mb-2">{score}/{mcqs.length}</div>
                 <div className="text-white/60">Correct Answers</div>
               </div>
               
               <div className="holographic-card p-6 rounded-2xl">
-                <div className="text-5xl font-bold text-purple-400 mb-2">{percentage.toFixed(1)}%</div>
+                <div className="text-5xl font-bold text-emerald-400 mb-2">{percentage.toFixed(1)}%</div>
                 <div className="text-white/60">Accuracy</div>
               </div>
               
@@ -145,15 +145,15 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
             <div className="mb-8">
               {percentage >= 80 ? (
                 <div className="text-green-400 text-xl font-bold">
-                  🎉 EXCEPTIONAL! Quantum knowledge absorption successful!
+                  🎉 EXCEPTIONAL! Knowledge mastery achieved!
                 </div>
               ) : percentage >= 60 ? (
                 <div className="text-yellow-400 text-xl font-bold">
-                  👍 GOOD! Core concepts understood. Room for quantum expansion.
+                  👍 GOOD! Core concepts understood. Keep improving!
                 </div>
               ) : (
                 <div className="text-red-400 text-xl font-bold">
-                  🔄 REVIEW NEEDED. Recommend quantum reinforcement.
+                  🔄 REVIEW NEEDED. Practice more to improve.
                 </div>
               )}
             </div>
@@ -182,26 +182,26 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
             <div>
               <h2 className="text-3xl font-bold mb-2">
-                <GradientText text="QUANTUM QUIZ" gradient="cyber" />
+                <GradientText text="QUIZ" gradient="cyber" />
               </h2>
-              <p className="text-cyan-400/70">Test your knowledge with AI-generated questions</p>
+              <p className="text-green-400/70">Test your knowledge with AI-generated questions</p>
             </div>
             <div className="flex items-center gap-2 mb-2">
-      <div className="px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-sm">
+      <div className="px-3 py-1 rounded-full bg-green-500/20 border border-green-500/30 text-green-400 text-sm">
         {language}
       </div>
     </div>
             
             {/* Stats */}
             <div className="flex gap-4">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 border border-cyan-500/30">
-                <Clock className="w-5 h-5 text-cyan-400" />
-                <span className="font-mono text-lg font-bold text-cyan-300">{formatTime(timeLeft)}</span>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 border border-green-500/30">
+                <Clock className="w-5 h-5 text-green-400" />
+                <span className="font-mono text-lg font-bold text-green-300">{formatTime(timeLeft)}</span>
               </div>
               
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 border border-purple-500/30">
-                <Brain className="w-5 h-5 text-purple-400" />
-                <span className="font-mono text-lg font-bold text-purple-300">{score}/{mcqs.length}</span>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 border border-emerald-500/30">
+                <Brain className="w-5 h-5 text-emerald-400" />
+                <span className="font-mono text-lg font-bold text-emerald-300">{score}/{mcqs.length}</span>
               </div>
             </div>
           </div>
@@ -209,14 +209,14 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
           {/* Progress Bar */}
           <div className="mb-8">
             <div className="flex justify-between text-sm mb-2">
-              <span className="text-cyan-400">Question {currentQuestionIndex + 1} of {mcqs.length}</span>
+              <span className="text-green-400">Question {currentQuestionIndex + 1} of {mcqs.length}</span>
               <span className="text-white/70">{Math.round(((currentQuestionIndex + 1) / mcqs.length) * 100)}% Complete</span>
             </div>
             <div className="h-2 bg-black/50 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: '0%' }}
                 animate={{ width: `${((currentQuestionIndex + 1) / mcqs.length) * 100}%` }}
-                className="h-full bg-linear-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-full"
+                className="h-full bg-linear-to-r from-green-500 via-emerald-500 to-teal-500 rounded-full"
               />
             </div>
           </div>
@@ -245,7 +245,7 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
               </div>
               
               <div className="text-right">
-                <div className="text-4xl font-bold text-cyan-400 font-mono">
+                <div className="text-4xl font-bold text-green-400 font-mono">
                   {String(currentQuestionIndex + 1).padStart(2, '0')}
                 </div>
                 <div className="text-white/30 text-sm">ID</div>
@@ -276,8 +276,8 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
                         : showIncorrect
                         ? 'border-red-500 bg-red-500/10'
                         : isSelected
-                        ? 'border-cyan-500 bg-cyan-500/10'
-                        : 'border-white/10 bg-white/5 hover:border-cyan-500/50 hover:bg-cyan-500/5',
+                        ? 'border-green-500 bg-green-500/10'
+                        : 'border-white/10 bg-white/5 hover:border-green-500/50 hover:bg-green-500/5',
                       isAnswered ? 'cursor-default' : 'cursor-pointer'
                     )}
                   >
@@ -290,7 +290,7 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
                             : showIncorrect
                             ? 'bg-red-500 text-white'
                             : isSelected
-                            ? 'bg-cyan-500 text-black'
+                            ? 'bg-green-500 text-black'
                             : 'bg-black/50 text-white/70 border border-white/10'
                         )}>
                           {String.fromCharCode(65 + index)}
@@ -319,7 +319,7 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
                   exit={{ opacity: 0, height: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="p-6 rounded-xl bg-linear-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/30">
+                  <div className="p-6 rounded-xl bg-linear-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30">
                     <div className="flex items-start gap-3">
                       <div className={cn(
                         'w-8 h-8 rounded-full flex items-center justify-center shrink-0',
@@ -333,14 +333,14 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
                       </div>
                       <div>
                         <h4 className="font-bold text-white mb-2">
-                          {isCorrect ? 'Quantum Correct! 🎉' : 'Incorrect Analysis ❌'}
+                          {isCorrect ? 'Correct! 🎉' : 'Incorrect ❌'}
                         </h4>
                         <p className="text-white/70">
                           {isCorrect 
-                            ? 'Perfect quantum alignment! Your answer matches the neural pattern.'
-                            : `The correct quantum pattern is: `}
+                            ? 'Great job! Your answer is correct.'
+                            : `The correct answer is: `}
                           {!isCorrect && (
-                            <span className="font-bold text-cyan-300">{currentQuestion.answer}</span>
+                            <span className="font-bold text-green-300">{currentQuestion.answer}</span>
                           )}
                         </p>
                       </div>
@@ -374,7 +374,7 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
                   className={cn(
                     'w-3 h-3 rounded-full transition-all',
                     index === currentQuestionIndex
-                      ? 'bg-cyan-500 scale-125 shadow-[0_0_10px_#00ffff]'
+                      ? 'bg-green-500 scale-125 shadow-[0_0_10px_#22c55e]'
                       : selectedAnswers[index]
                       ? currentQuestion.answer === selectedAnswers[index]
                         ? 'bg-green-500'
