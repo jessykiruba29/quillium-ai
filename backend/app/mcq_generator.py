@@ -168,7 +168,7 @@ def translate_mcqs_to_language(english_mcqs: List[Dict], target_lang: str, api_k
         model = genai.GenerativeModel('gemini-2.5-flash-lite')
         
         print(f"\n{'='*70}")
-        print(f"🔄 [TRANSLATE] Starting translation of {len(english_mcqs)} MCQs to {target_lang}")
+        print(f"[TRANSLATE] Starting translation of {len(english_mcqs)} MCQs to {target_lang}")
         print(f"{'='*70}\n")
         
         # Translate each MCQ individually for better reliability

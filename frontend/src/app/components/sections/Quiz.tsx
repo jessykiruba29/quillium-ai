@@ -155,15 +155,15 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
             <div className="mb-8">
               {percentage >= 80 ? (
                 <div className="text-green-400 text-xl font-bold">
-                  🎉 EXCEPTIONAL! Knowledge mastery achieved!
+                  EXCEPTIONAL! Knowledge mastery achieved!
                 </div>
               ) : percentage >= 60 ? (
                 <div className="text-yellow-400 text-xl font-bold">
-                  👍 GOOD! Core concepts understood. Keep improving!
+                  GOOD! Core concepts understood. Keep improving!
                 </div>
               ) : (
                 <div className="text-red-400 text-xl font-bold">
-                  🔄 REVIEW NEEDED. Practice more to improve.
+                  REVIEW NEEDED. Practice more to improve.
                 </div>
               )}
             </div>
@@ -174,7 +174,16 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
                 <span>New Document</span>
               </HolographicButton>
               
-              <HolographicButton onClick={() => setCurrentQuestionIndex(0)}>
+              <HolographicButton onClick={() => {
+                // Reset review state locally then navigate to Flashcards view
+                setCurrentQuestionIndex(0)
+                setShowExplanation(false)
+                try {
+                  window.dispatchEvent(new CustomEvent('navigation', { detail: { view: 'flashcards' } }))
+                } catch (e) {
+                  // ignore if dispatch fails
+                }
+              }}>
                 <span>Review Questions</span>
               </HolographicButton>
             </div>
