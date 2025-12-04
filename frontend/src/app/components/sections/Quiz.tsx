@@ -352,14 +352,24 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
           </motion.div>
 
           {/* Navigation */}
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
             <HolographicButton
               onClick={onBack}
               variant="ghost"
-              size="lg"
+              size="sm"
             >
-              <ChevronLeft className="w-5 h-5" />
-              <span>Back to Upload</span>
+              <ChevronLeft className="w-4 h-4" />
+              <span>Back</span>
+            </HolographicButton>
+            
+            <HolographicButton
+              onClick={handlePrevious}
+              size="md"
+              disabled={currentQuestionIndex === 0}
+              variant="secondary"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              <span>Previous</span>
             </HolographicButton>
             
             {/* Question Dots */}
@@ -387,18 +397,18 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
             
             <HolographicButton
               onClick={handleNext}
-              size="lg"
+              size="md"
               disabled={!isAnswered && currentQuestionIndex === mcqs.length - 1}
             >
               {currentQuestionIndex === mcqs.length - 1 ? (
                 <>
-                  <span>Complete Quiz</span>
-                  <Trophy className="w-5 h-5" />
+                  <Trophy className="w-4 h-4" />
+                  <span>Complete</span>
                 </>
               ) : (
                 <>
-                  <span>Next Question</span>
-                  <ChevronRight className="w-5 h-5" />
+                  <span>Next</span>
+                  <ChevronRight className="w-4 h-4" />
                 </>
               )}
             </HolographicButton>
