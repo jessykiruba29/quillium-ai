@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ChevronLeft, 
@@ -30,7 +30,8 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({})
   const [showExplanation, setShowExplanation] = useState(false)
   const [score, setScore] = useState(0)
-  const [timeLeft, setTimeLeft] = useState(300) // 5 minutes
+  const [elapsedSeconds, setElapsedSeconds] = useState(0)
+  const timerRef = useRef<number | null>(null)
   const [quizCompleted, setQuizCompleted] = useState(false)
 
   const currentQuestion = mcqs[currentQuestionIndex]
@@ -38,21 +39,30 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
   const isAnswered = selectedAnswer !== undefined
   const isCorrect = isAnswered && selectedAnswer === currentQuestion.answer
 
-  // Timer effect
-  useState(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(timer)
-          setQuizCompleted(true)
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
+  // Timer: track elapsed seconds (unlimited). Stop when quizCompleted is true.
+  useEffect(() => {
+    // Start timer if not already running
+    if (!timerRef.current && !quizCompleted) {
+      timerRef.current = window.setInterval(() => {
+        setElapsedSeconds(prev => prev + 1)
+      }, 1000)
+    }
 
-    return () => clearInterval(timer)
-  })
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+        timerRef.current = null
+      }
+    }
+  }, [])
+
+  // Stop timer when quiz completes
+  useEffect(() => {
+    if (quizCompleted && timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+  }, [quizCompleted])
 
   const handleAnswerSelect = (option: string) => {
     if (isAnswered || quizCompleted) return
@@ -136,7 +146,7 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
               </div>
               
               <div className="holographic-card p-6 rounded-2xl">
-                <div className="text-5xl font-bold text-pink-400 mb-2">{formatTime(300 - timeLeft)}</div>
+                <div className="text-5xl font-bold text-pink-400 mb-2">{formatTime(elapsedSeconds)}</div>
                 <div className="text-white/60">Time Taken</div>
               </div>
             </div>
@@ -196,7 +206,7 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
             <div className="flex gap-4">
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 border border-green-500/30">
                 <Clock className="w-5 h-5 text-green-400" />
-                <span className="font-mono text-lg font-bold text-green-300">{formatTime(timeLeft)}</span>
+                <span className="font-mono text-lg font-bold text-green-300">{formatTime(elapsedSeconds)}</span>
               </div>
               
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 border border-emerald-500/30">
@@ -352,7 +362,7 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
           </motion.div>
 
           {/* Navigation */}
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-20">
             <HolographicButton
               onClick={onBack}
               variant="ghost"
