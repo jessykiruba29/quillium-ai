@@ -352,7 +352,7 @@ export const QuizInterface = ({ mcqs, onAnswer, onBack,language='English' }: Qui
           </motion.div>
 
           {/* Navigation */}
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-20">
             <HolographicButton
               onClick={onBack}
               variant="ghost"
