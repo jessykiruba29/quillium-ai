@@ -20,7 +20,7 @@ const rajdhani = Rajdhani({
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'QUILLIUM | Learning Platform',
+  title: 'Quillium | Learning Platform',
   description: 'Transform PDFs into interactive learning experiences with AI-powered quizzes and smart flashcards',
   keywords: ['AI Learning', 'PDF Quiz', 'Education', 'Flashcards', 'Interactive Learning'],
 }

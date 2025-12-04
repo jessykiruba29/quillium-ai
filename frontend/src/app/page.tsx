@@ -132,12 +132,23 @@ export default function Home() {
       try {
         localStorage.setItem('quillium_data', JSON.stringify(formattedData))
         localStorage.setItem('quillium_language', selectedLanguage)
+        // Notify other parts of the app (Header) that data is available
+        try {
+          window.dispatchEvent(new CustomEvent('quillium:data:updated', { detail: { hasData: true } }))
+        } catch (e) {
+          // ignore if dispatch fails
+        }
       } catch (error) {
         console.error('Failed to save to localStorage:', error)
       }
       
       setTimeout(() => {
         setCurrentView('quiz')
+        try {
+          window.dispatchEvent(new CustomEvent('navigation', { detail: { view: 'quiz' } }))
+        } catch (e) {
+          // ignore
+        }
       }, 500)
       
     } catch (error: any) {
@@ -200,6 +211,11 @@ export default function Home() {
 
   const navigateTo = (view: View) => {
     setCurrentView(view)
+    try {
+      window.dispatchEvent(new CustomEvent('navigation', { detail: { view } }))
+    } catch (e) {
+      // ignore
+    }
   }
 
   const clearLocalStorage = () => {
@@ -216,6 +232,16 @@ export default function Home() {
       flashcardsStudied: 0,
     })
     setCurrentView('upload')
+    try {
+      window.dispatchEvent(new CustomEvent('quillium:data:updated', { detail: { hasData: false } }))
+    } catch (e) {
+      // ignore
+    }
+    try {
+      window.dispatchEvent(new CustomEvent('navigation', { detail: { view: 'upload' } }))
+    } catch (e) {
+      // ignore
+    }
   }
 
   const retryUploadWithLanguage = async () => {
