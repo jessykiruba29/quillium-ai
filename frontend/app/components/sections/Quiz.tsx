@@ -15,8 +15,8 @@ import {
 import { GradientText } from '../ui/GradientText'
 import { HolographicButton } from '../ui/HolographicButton'
 import { CyberBorder } from '../ui/CyberBorder'
-import { MCQ } from '@/types'
-import { cn } from '@/lib/utils'
+import { MCQ } from '../../../types'
+import { cn } from '../../../lib/utils'
 
 interface QuizInterfaceProps {
   mcqs: MCQ[]
