@@ -11,8 +11,8 @@ import { ProgressDashboard } from './components/sections/Progress'
 import { LanguageSelector } from './components/sections/Language'
 import { LoadingOrb } from './components/ui/LoadingOrb'
 import { StarField } from './components/effects/StarField'
-import { uploadPDF } from '@/lib/api/client'
-import { MCQ, Flashcard, ProgressData } from '@/types'
+import { uploadPDF } from '../lib/api/client'
+import { MCQ, Flashcard, ProgressData } from '../types'
 
 type View = 'hero' | 'upload' | 'quiz' | 'flashcards' | 'progress'
 

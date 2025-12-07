@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Menu, X, Zap, Upload, Brain, Layers, BarChart3, Home, LeafIcon, LeafyGreen } from 'lucide-react'
 import { GradientText } from '../ui/GradientText'
-import { cn } from '@/lib/utils'
+import { cn } from '../../../lib/utils'
 
 type View = 'hero' | 'upload' | 'quiz' | 'flashcards' | 'progress'
 

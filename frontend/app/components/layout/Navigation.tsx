@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { Upload, Brain, Layers, BarChart3, Home } from 'lucide-react'
 import { HolographicButton } from '../ui/HolographicButton'
-import { cn } from '@/lib/utils'
+import { cn } from '../../../lib/utils'
 
 type View = 'hero' | 'upload' | 'quiz' | 'flashcards' | 'progress'
 

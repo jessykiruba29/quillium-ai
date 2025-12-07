@@ -6,8 +6,8 @@ import { ChevronLeft, ChevronRight, RotateCcw, Zap, Layers, Star } from 'lucide-
 import { GradientText } from '../ui/GradientText'
 import { HolographicButton } from '../ui/HolographicButton'
 import { CyberBorder } from '../ui/CyberBorder'
-import { Flashcard } from '@/types'
-import { cn } from '@/lib/utils'
+import { Flashcard } from '../../../types'
+import { cn } from '../../../lib/utils'
 
 interface FlashcardHoloProps {
   flashcards: Flashcard[]
