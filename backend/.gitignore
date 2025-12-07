@@ -26,3 +26,4 @@ wheels/
 *.pyd
 models/
 app/__pycache__/
+venv/
