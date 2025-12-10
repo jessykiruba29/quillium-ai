@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -64,7 +64,7 @@ export const uploadPDF = async (file: File, language: string = 'English', questi
   })
   
   try {
-    const url = `${API_BASE_URL.replace(/\/$/, '')}/process-pdf`
+    const url = `${API_BASE_URL}/process-pdf`
     const response = await fetch(url, {
       method: 'POST',
       body: formData,
